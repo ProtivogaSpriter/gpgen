@@ -100,10 +100,6 @@ void clr_csl()
 
     system("clear");
 
-#elif defined (__APPLE__)
-
-    system("clear");
-
 #endif
 }
 
