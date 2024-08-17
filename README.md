@@ -1,2 +1,2 @@
 # gpgen
- a simple password generator
+a simple password generator that works in console
