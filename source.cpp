@@ -6,35 +6,20 @@
 #include <chrono>
 #include <random>                   //FUCK THAT'S A LOT OF LIBRARIES
 
-#if defined _WIN32
+#if defined (WIN32)
     #include <Windows.h>
     #include <conio.h>
     #include <cstdio>
 
-#elif defined (__LINUX__) || defined(__gnu_linux__) || defined(__linux__)
+#elif defined (UNIX) ||(_unix_)||(_linux_)||(LINUX)||(linux)
     #include <unistd.h>
     #include <stdio.h>
     #include <sys/select.h>
+    #include <sys/ioctl.h>
     #include <termios.h>
-    #include <stropts.h>
-int _kbhit() {
-    static const int STDIN = 0;
-    static bool initialized = false;
 
-    if (! initialized) {
-        // Use termios to turn off line buffering
-        termios term;
-        tcgetattr(STDIN, &term);
-        term.c_lflag &= ~ICANON;
-        tcsetattr(STDIN, TCSANOW, &term);
-        setbuf(stdin, NULL);
-        initialized = true;
-    }
 
-    int bytesWaiting;
-    ioctl(STDIN, FIONREAD, &bytesWaiting);
-    return bytesWaiting;
-}
+static struct termios old, current;
 
 /* Initialize new terminal i/o settings */
 void initTermios(int echo)
@@ -56,13 +41,26 @@ void resetTermios(void)
   tcsetattr(0, TCSANOW, &old);
 }
 
-char _getch(int echo)
+/* Read 1 character - echo defines echo mode */
+char getch(int echo)
 {
   char ch;
   initTermios(echo);
   ch = getchar();
   resetTermios();
   return ch;
+}
+
+/* Read 1 character without echo */
+char getch(void)
+{
+  return getch(0);
+}
+
+/* Read 1 character with echo */
+char getche(void)
+{
+  return getch(1);
 }
 
 #endif
@@ -92,20 +90,20 @@ char _getch(int echo)
 
 void clr_csl()
 {
-#if defined _WIN32
+#if defined(WIN32)
 
     system("cls");
 
-#elif defined (__LINUX__) || defined(__gnu_linux__) || defined(__linux__)
+#elif defined (UNIX) ||(_unix_)||(_linux_)||(LINUX)||(linux)
 
-    system("clear");
+    std::cout << "\033[H\033[J";
 
 #endif
 }
 
 void keystroke_read(char& in_char){
 
-#if defined _WIN32
+#if defined(WIN32)
 
     while( !_kbhit()){
         Sleep(3);
@@ -114,13 +112,9 @@ void keystroke_read(char& in_char){
     //std::cout << "keystroke: " << in_char << std::endl;
 
 
-#elif defined (__LINUX__) || defined(__gnu_linux__) || defined(__linux__)
+#elif defined (UNIX) ||(_unix_)||(_linux_)||(LINUX)||(linux)
 
-    while( !_kbhit()){
-        usleep(3000);   //this is in mircoseconds, as opposed to Windows.h's Sleep(), which takes milliseconds
-    }
-    in_char = _getch(0);
-    //std::cout << "keystroke: " << in_char << std::endl;
+    in_char = getch(0);
 
 #endif
 }
@@ -262,6 +256,7 @@ pswd_notquite:
         break;
 
     case(0x0D):
+    case('\n'):
     {
         if(chr_pool.length() <= 0){
             clr_csl();
@@ -290,8 +285,6 @@ pswd_notquite:
         case('y'):
         {
 
-
-            bool tagexists {false};
             input = "";
 
             std::ofstream output_file("output.txt", std::ios::app);
@@ -385,11 +378,27 @@ Enter any key to stop reading manual.)" << std::endl;
 
 int main(){
 
-#if defined _WIN32                           //gotta test this on linux too
+    bool yeag = false;
+
+
+#if defined (WIN32)                           //gotta test this on linux too
     SetConsoleOutputCP(CP_UTF8);
     setvbuf(stdout, nullptr, _IOFBF, 1000);
+    std::cout << "You are on windows!" << std::endl;
+    yeag = true;
+
+#elif defined (UNIX) ||(_unix_)||(_linux_)||(LINUX)||(linux)
+
+    std::cout<< "You are on linux!" << std::endl;
+    yeag = true;
 
 #endif
+
+if(yeag = false){
+    std::cout << "Wrong OS, buddy." << std::endl;
+    exit(1);
+}
+
 
     std::cout << R"(
 ╔═════════════════════════════════════════════╗
@@ -466,6 +475,7 @@ notquite:
         break;
 
     case(0x0D):
+    case('\n'):
         password_generate();
         break;
 
@@ -474,6 +484,7 @@ notquite:
         break;
 
     case(0x1B):
+        clr_csl();
         exit(0);
 
     case('h'):
