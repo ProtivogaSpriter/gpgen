@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1723885276 source:c:\users\gregory\desktop\scriptbag\code\gitshit\gpgen\source.cpp
+1724000727 source:c:\users\gregory\desktop\scriptbag\code\gitshit\gpgen\source.cpp
 	<iostream>
 	<fstream>
 	<string>
@@ -13,8 +13,8 @@
 	<unistd.h>
 	<stdio.h>
 	<sys/select.h>
+	<sys/ioctl.h>
 	<termios.h>
-	<stropts.h>
 
 1723987471 source:/home/topg/Projects/gpgen/source.cpp
 	<iostream>

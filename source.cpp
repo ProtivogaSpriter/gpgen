@@ -6,7 +6,7 @@
 #include <chrono>
 #include <random>                   //FUCK THAT'S A LOT OF LIBRARIES
 
-#if defined (WIN32)
+#if defined (_WIN32)
     #include <Windows.h>
     #include <conio.h>
     #include <cstdio>
@@ -54,16 +54,19 @@ char getch(int echo)
 
 #endif
 
+    constexpr unsigned long long poolmaxdisplay {100};
+
     std::random_device  randomizer_seeder;
     std::mt19937 randomizer(0);
 
     char in_char {' '};
 
-    std::string input       {""};
+    std::string input           {""};
 
-    std::string chr_pool    {""};
+    std::string chr_pool        {""};
+    bool        chr_pool_ovflw  {false};
 
-    std::string pswd_result {""};
+    std::string pswd_result     {""};
 
     const std::string   chr_lowercase       {"abcdefghijklmnopqrstuvwxyz"};
     bool                lowercased          {false};
@@ -79,7 +82,7 @@ char getch(int echo)
 
 void clr_csl()
 {
-#if defined(WIN32)
+#if defined(_WIN32)
 
     system("cls");
 
@@ -92,11 +95,8 @@ void clr_csl()
 
 void keystroke_read(char& in_char){
 
-#if defined(WIN32)
+#if defined(_WIN32)
 
-    while( !_kbhit()){
-        Sleep(3);
-    }
     in_char = _getch();
     //std::cout << "keystroke: " << in_char << std::endl;
 
@@ -112,23 +112,37 @@ void print_status(){
 
     if(chr_pool.length() != 0){
 
+        int render_length = ((chr_pool.length() > poolmaxdisplay) ? poolmaxdisplay : chr_pool.length());
+
+        if(chr_pool_ovflw){
+            render_length += 3;
+        }
+
         std::cout <<"╔═══════════════════════╦";
 
-        for(long unsigned int i = 0; i < chr_pool.length(); i++){
+        for(long unsigned int i = 0; i < render_length; i++){
             std::cout << "═";
         }
         std::cout << "╗\n";
 
         std::cout << "║Current character pool:║";
 
-        for(long unsigned int i = 0; i < chr_pool.length(); i++){
-            std::cout << chr_pool[i];
+        if(!chr_pool_ovflw){
+            for(long unsigned int i = 0; i < render_length; i++){
+                std::cout << chr_pool[i];
+            }
+        }
+        else{
+            for(long unsigned int i = 0; i < poolmaxdisplay; i++){
+                std::cout << chr_pool[i];
+            }
+            std::cout << "\033[96m...\033[0m";
         }
         std::cout << "║\n";
 
         std::cout << "╚═══════════════════════╩";
 
-        for(long unsigned int i = 0; i < chr_pool.length(); i++){
+        for(long unsigned int i = 0; i < render_length; i++){
             std::cout << "═";
         }
         std::cout << "╝\n";
@@ -139,18 +153,21 @@ void print_status(){
     }
 
     if(!lowercased)
-        std::cout << "Press 'l' to add lowercase characters.  (" << chr_lowercase << ")" << std::endl;
+        std::cout << "Press \033[95m'l'\033[0m to add lowercase characters.  (" << chr_lowercase << ")" << std::endl;
 
     if(!uppercased)
-        std::cout << "Press 'u' to add uppercase characters.  (" << chr_uppercase << ")" << std::endl;
+        std::cout << "Press \033[95m'u'\033[0m to add uppercase characters.  (" << chr_uppercase << ")" << std::endl;
 
     if(!numericd)
-        std::cout << "Press 'n' to add numeric characters.    (" << chr_numeric << ")" << std::endl;
+        std::cout << "Press \033[95m'n'\033[0m to add numeric characters.    (" << chr_numeric << ")" << std::endl;
 
     if(!speciald)
-        std::cout << "Press 's' to add special characters.    (" << chr_special << ")" << std::endl;
+        std::cout << "Press \033[95m's'\033[0m to add special characters.    (" << chr_special << ")" << std::endl;
 
-    std::cout << "\nPress '!' to add your own string of any UTF-8 characters." << std::endl;
+    std::cout << "\nPress \033[95m'!'\033[0m to add your own string of any UTF-8 characters." << std::endl;
+
+    if(chr_pool_ovflw)
+        std::cout << "\n\033[96mPress \033[95m'F'\033[0m to show the entire character pool.\033[0m" << std::endl;
 
     std::string str_1 {""};
     std::string str_2 {""};
@@ -196,15 +213,26 @@ void print_status(){
     std::cout << "╝\n";
 
 
-    std::cout << "\nPress 'L' to set passlength." << std::endl;
-    std::cout << "Press 'S' to manually set seed. \033[91mThis is not recommended.\033[0m" << std::endl;
+    std::cout << "\nPress \033[95m'L'\033[0m to set passlength." << std::endl;
+    std::cout << "Press \033[95m'S'\033[0m to manually set seed. \033[91mThis is not recommended.\033[0m" << std::endl;
 
-    std::cout << "\nPress 'enter' to generate password with current settings." << std::endl;
+    std::cout << "\nPress \033[95m'enter'\033[0m to generate password with current settings." << std::endl;
 
-    std::cout << "\nPress '*' to reset everything." << std::endl;
-    std::cout << "Press 'esc' to shutdown." << std::endl;
+    std::cout << "\nPress \033[95m'*'\033[0m to reset everything." << std::endl;
+    std::cout << "Press \033[95m'esc'\033[0m to shutdown." << std::endl;
 
-    std::cout << "\n\033[93mPress 'H' or 'h' for help.\033[0m" << std::endl;
+    std::cout << "\n\033[93mPress \033[95m'H'\033[93m or \033[95m'h'\033[93m for help.\033[0m" << std::endl;
+}
+
+void print_fullpool(){
+    std::cout << "╔═══════════════════════════╗\n║The full character pool is:║\n╚═══════════════════════════╝\n" << std::endl;
+
+    std::cout << chr_pool << std::endl;
+
+    std::cout << "\n\033[93mPress any key to return to main menu.\033[0m" << std::endl;
+
+    keystroke_read(in_char);
+
 }
 
 void reset_status(){
@@ -213,9 +241,12 @@ void reset_status(){
     numericd = false;
     speciald = false;
     chr_pool = "";
+    chr_pool_ovflw = false;
     pswd_length = 8;
     pswd_seed = randomizer_seeder();
 }
+
+
 
 void password_generate(){
 
@@ -223,7 +254,7 @@ void password_generate(){
 
         if(chr_pool.length() <= 0){
             clr_csl();
-            std::cout << "Character pool is blank. Add characters to pool before generating password. Press any key to return." << std::endl;
+            std::cout << "Character pool is blank. Add characters to pool before generating password. \n\n\033[93mPress any key to return to main menu.\033[0m" << std::endl;
             keystroke_read(in_char);
             return;
         }
@@ -301,23 +332,23 @@ The purpose of this app is creating randomly-generated passwords using pre-defin
 
 To generate a password:
 
-1.      Add character sets to the character set pool by using the 'l', 'u', 'n', 's' keys. Note these are case-sensitive.
-1.1     You can add your own UTF-8 conforming character pool by pressing '!'.
-1.2     You can reset all variables by pressing '*'.)" << std::endl;
+1.      Add character sets to the character set pool by pressing the )" << "\033[95m'l'\033[0m, \033[95m'u'\033[0m, \033[95m'n'\033[0m, \033[95m's'\033[0m" << R"( keys. Note these are case-sensitive.
+1.1     You can add your own UTF-8 conforming character pool by pressing )" <<  "\033[95m'!'.\033[0m " <<R"(
+1.2     If the character pool's size exceeds )" << poolmaxdisplay << R"(, the diplay bar will show a series of )" << "\033[96mcyan dots\033[0m" << R"(. To see the entire pool, press )" << "\033[95m'F'\033[0m" << R"(. This is case-sensitive.)"<<std::endl;
 
-std::cout << R"(1.3     You can set the generated password's length by pressing 'L'. This is case-sensitive.
-1.4     You can set the seed by pressing 'S'. This is case-sensitive and)" << " \033[91mnot recommended\033[0m." << R"(
-1.5     You can halt the program by pressing 'esc'.
+std::cout << R"(1.3     You can set the generated password's length by pressing )" << "\033[95m'L'\033[0m" << R"(. This is case-sensitive.
+1.4     You can set the seed by pressing )" << "\033[95m'S'\033[0m" << R"(. This is case-sensitive and)" << " \033[91mnot recommended\033[0m." << R"(
+1.5     You can reset all variables by pressing )" << "\033[95m'*'\033[0m." << R"(
+1.6     You can halt the program by pressing )" << "\033[95m'esc'\033[0m" <<R"(.
 
-2.      Generate the password by pressing 'enter'. Make sure the character set pool has at least 1 character.
-2.1     You can save the password to a plaintext file titled 'output.txt' in the directory of the .exe file by pressing 'Y' or 'y'. Otherwise, press 'N' or 'n'.
+2.      Generate the password by pressing )" << "\033[95m'enter'\033[0m" <<R"(. Make sure the character set pool has at least 1 character.
+2.1     You can save the password to a plaintext file titled 'output.txt' in the directory of the .exe file by pressing )" << "\033[95m'enter'\033[0m" <<R"( or )" << "\033[95m'y'\033[0m" <<R"(. Otherwise, press )" << "\033[95m'N'\033[0m" <<R"( or )" << "\033[95m'n'\033[0m" <<R"(.
 2.1.1   You can add a tag to the saved password by typing anything when prompted for a tag. If no tag is needed, enter nothing.
 
 
 That's about it.
 
-
-Enter any key to stop reading manual.)" << std::endl;
+)" << "\033[93mPress any key to return to main menu.\033[0m" << std::endl;
 
     keystroke_read(in_char);
 
@@ -325,7 +356,7 @@ Enter any key to stop reading manual.)" << std::endl;
 
 int main(){
 
-#if defined (WIN32)
+#if defined (_WIN32)
 
     SetConsoleOutputCP(CP_UTF8);
     setvbuf(stdout, nullptr, _IOFBF, 1000);
@@ -337,6 +368,7 @@ int main(){
 
 #endif
 
+    clr_csl();
 
     std::cout << R"(
 ╔═════════════════════════════════════════════╗
@@ -358,13 +390,17 @@ int main(){
                                                
  ░ ░░▒▒▓▓█ GREG'S PASSWORD GENERATOR █▓▓▒▒░░ ░ )" << std::endl; //god i am so cool
 
-    std::cout << "\nPress any key to continue.\n" << std::endl;
+    std::cout << "\n\033[93mPress any key to continue.\033[0m" << std::endl;
 
     keystroke_read(in_char);
 
 goagain:
 
     clr_csl();
+
+    if(chr_pool.length() > poolmaxdisplay){
+        chr_pool_ovflw = true;
+    }
 
     print_status();
 
@@ -410,6 +446,13 @@ notquite:
         chr_pool += input;
         input = "";
 
+        break;
+
+    case('F'):
+        if(chr_pool_ovflw){
+            clr_csl();
+            print_fullpool();
+        }
         break;
 
     case('L'):
