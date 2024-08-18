@@ -51,17 +51,6 @@ char getch(int echo)
   return ch;
 }
 
-/* Read 1 character without echo */
-char getch(void)
-{
-  return getch(0);
-}
-
-/* Read 1 character with echo */
-char getche(void)
-{
-  return getch(1);
-}
 
 #endif
 
@@ -125,21 +114,21 @@ void print_status(){
 
         std::cout <<"╔═══════════════════════╦";
 
-        for(int i = 0; i < chr_pool.length(); i++){
+        for(long unsigned int i = 0; i < chr_pool.length(); i++){
             std::cout << "═";
         }
         std::cout << "╗\n";
 
         std::cout << "║Current character pool:║";
 
-        for(int i = 0; i < chr_pool.length(); i++){
+        for(long unsigned int i = 0; i < chr_pool.length(); i++){
             std::cout << chr_pool[i];
         }
         std::cout << "║\n";
 
         std::cout << "╚═══════════════════════╩";
 
-        for(int i = 0; i < chr_pool.length(); i++){
+        for(long unsigned int i = 0; i < chr_pool.length(); i++){
             std::cout << "═";
         }
         std::cout << "╝\n";
@@ -150,45 +139,21 @@ void print_status(){
     }
 
     if(!lowercased)
-        std::cout << "Press 'L' to add lowercase characters.  (" << chr_lowercase << ")" << std::endl;
+        std::cout << "Press 'l' to add lowercase characters.  (" << chr_lowercase << ")" << std::endl;
 
     if(!uppercased)
-        std::cout << "Press 'U' to add uppercase characters.  (" << chr_uppercase << ")" << std::endl;
+        std::cout << "Press 'u' to add uppercase characters.  (" << chr_uppercase << ")" << std::endl;
 
     if(!numericd)
-        std::cout << "Press 'N' to add numeric characters.    (" << chr_numeric << ")" << std::endl;
+        std::cout << "Press 'n' to add numeric characters.    (" << chr_numeric << ")" << std::endl;
 
     if(!speciald)
-        std::cout << "Press 'S' to add special characters.    (" << chr_special << ")" << std::endl;
+        std::cout << "Press 's' to add special characters.    (" << chr_special << ")" << std::endl;
 
     std::cout << "\nPress '!' to add your own string of any UTF-8 characters." << std::endl;
 
-    std::cout << "\nPress 'enter' to generate password from current pool." << std::endl;
-
-    std::cout << "\nPress '*' to reset everything." << std::endl;
-    std::cout << "Press 'esc' to shutdown." << std::endl;
-
-    std::cout << "\n\033[93mPress 'H' or 'h' for help.\033[0m" << std::endl;
-}
-
-void reset_status(){
-    lowercased = false;
-    uppercased = false;
-    numericd = false;
-    speciald = false;
-    chr_pool = "";
-    pswd_length = 8;
-    pswd_seed = randomizer_seeder();
-}
-
-void password_generate(){
-
     std::string str_1 {""};
     std::string str_2 {""};
-
-pswd_reset:
-
-    clr_csl();
 
     str_1 = std::to_string(pswd_seed);
     str_2 = std::to_string(pswd_length);
@@ -202,7 +167,7 @@ pswd_reset:
         big_size = str_2.length();
     }
 
-    std::cout << "╔═══════════════════╦";
+    std::cout << "\n╔═══════════════════╦";
 
     for(int i = 0; i < big_size; i++){
         std::cout << "═";
@@ -231,38 +196,36 @@ pswd_reset:
     std::cout << "╝\n";
 
 
-    std::cout << "\nPress 'L' to set passlength. \n\nPress 'S' to manually set seed. \033[91mThis is not recommended.\033[0m \n\nPress 'enter' to generate password with current settings. \n\nPress 'esc' to return to previous menu." << std::endl;
+    std::cout << "\nPress 'L' to set passlength." << std::endl;
+    std::cout << "Press 'S' to manually set seed. \033[91mThis is not recommended.\033[0m" << std::endl;
 
-pswd_notquite:
+    std::cout << "\nPress 'enter' to generate password with current settings." << std::endl;
 
-    keystroke_read(in_char);
+    std::cout << "\nPress '*' to reset everything." << std::endl;
+    std::cout << "Press 'esc' to shutdown." << std::endl;
 
-    switch(in_char){
+    std::cout << "\n\033[93mPress 'H' or 'h' for help.\033[0m" << std::endl;
+}
 
-    case('L'):
+void reset_status(){
+    lowercased = false;
+    uppercased = false;
+    numericd = false;
+    speciald = false;
+    chr_pool = "";
+    pswd_length = 8;
+    pswd_seed = randomizer_seeder();
+}
 
-        clr_csl();
-        std::cout << "Enter passlength:" << std::endl;
-        std::getline(std::cin, input);
-        std::stringstream(input) >> pswd_length;
-        break;
+void password_generate(){
 
-    case('S'):
 
-        clr_csl();
-        std::cout << "Enter seed:" << std::endl;
-        std::getline(std::cin, input);
-        std::stringstream(input) >> pswd_seed;
-        break;
 
-    case(0x0D):
-    case('\n'):
-    {
         if(chr_pool.length() <= 0){
             clr_csl();
             std::cout << "Character pool is blank. Add characters to pool before generating password. Press any key to return." << std::endl;
             keystroke_read(in_char);
-            break;
+            return;
         }
 
         clr_csl();
@@ -273,7 +236,7 @@ pswd_notquite:
         }
         std::cout << "Your password is: \n" << pswd_result << std::endl;
 
-        std::cout << "\nSave to 'output.txt'? (Y/N)" << std::endl;
+        std::cout << "\nSave to 'output.txt'? (Y/n)" << std::endl;
 
         yeahnah:
 
@@ -295,7 +258,7 @@ pswd_notquite:
                 break;
             }
 
-            std::cout << "Enter a tag or leave blank for no tag: "; //wtf is going on with this piece of shit??? sometimes it works sometimes it doesn't? i'm bout to genuinely shit the bed here
+            std::cout << "Enter a tag or leave blank for no tag: ";
             std::getline(std::cin, input);
             if(input.length() > 0){
                 output_file << input << ": ";
@@ -323,19 +286,6 @@ pswd_notquite:
 
         pswd_seed = randomizer_seeder();
 
-        break;
-    }
-    case(0x1B):
-
-        return;
-
-    default:
-
-        goto pswd_notquite;
-    }
-
-    goto pswd_reset;
-
 }
 
 void help_me(void){
@@ -351,20 +301,17 @@ The purpose of this app is creating randomly-generated passwords using pre-defin
 
 To generate a password:
 
-1.      Add character sets to the character set pool by using the 'L', 'U', 'N', 'S' keys. Note these are case-sensitive.
+1.      Add character sets to the character set pool by using the 'l', 'u', 'n', 's' keys. Note these are case-sensitive.
 1.1     You can add your own UTF-8 conforming character pool by pressing '!'.
-1.2     You can reset all variables by pressing '*'.
-1.3     You can halt the program by pressing 'esc'.)" << std::endl;
+1.2     You can reset all variables by pressing '*'.)" << std::endl;
 
-std::cout << R"(
-2.      Move to the next menu by pressing 'enter'.
-2.1     You can set the generated password's length by pressing 'L'. This is case-sensitive.
-2.2     You can set the seed by pressing 'S'. This is case-sensitive and)" << " \033[91mnot recommended\033[0m." << R"(
-2.3     You can quit out to the previous menu by pressing 'esc'.
+std::cout << R"(1.3     You can set the generated password's length by pressing 'L'. This is case-sensitive.
+1.4     You can set the seed by pressing 'S'. This is case-sensitive and)" << " \033[91mnot recommended\033[0m." << R"(
+1.5     You can halt the program by pressing 'esc'.
 
-3.      Generate the password by pressing 'enter'. Make sure the character set pool has at least 1 character.
-3.1     You can save the password to a plaintext file titled 'output.txt' in the directory of the .exe file by pressing 'Y' or 'y'. Otherwise, press 'N' or 'n'.
-3.1.1   You can add a tag to the generated password by typing anything when prompted for a tag. If no tag is needed, enter nothing.
+2.      Generate the password by pressing 'enter'. Make sure the character set pool has at least 1 character.
+2.1     You can save the password to a plaintext file titled 'output.txt' in the directory of the .exe file by pressing 'Y' or 'y'. Otherwise, press 'N' or 'n'.
+2.1.1   You can add a tag to the saved password by typing anything when prompted for a tag. If no tag is needed, enter nothing.
 
 
 That's about it.
@@ -378,26 +325,17 @@ Enter any key to stop reading manual.)" << std::endl;
 
 int main(){
 
-    bool yeag = false;
+#if defined (WIN32)
 
-
-#if defined (WIN32)                           //gotta test this on linux too
     SetConsoleOutputCP(CP_UTF8);
     setvbuf(stdout, nullptr, _IOFBF, 1000);
     std::cout << "You are on windows!" << std::endl;
-    yeag = true;
 
 #elif defined (UNIX) ||(_unix_)||(_linux_)||(LINUX)||(linux)
 
     std::cout<< "You are on linux!" << std::endl;
-    yeag = true;
 
 #endif
-
-if(yeag = false){
-    std::cout << "Wrong OS, buddy." << std::endl;
-    exit(1);
-}
 
 
     std::cout << R"(
@@ -436,28 +374,28 @@ notquite:
 
     switch(in_char){
 
-    case('L'):
+    case('l'):
         if(!lowercased){
             lowercased = true;
             chr_pool += chr_lowercase;
         }
         break;
 
-    case('U'):
+    case('u'):
         if(!uppercased){
             uppercased = true;
             chr_pool += chr_uppercase;
         }
         break;
 
-    case('N'):
+    case('n'):
         if(!numericd){
             numericd = true;
             chr_pool += chr_numeric;
         }
         break;
 
-    case('S'):
+    case('s'):
         if(!speciald){
             speciald = true;
             chr_pool += chr_special;
@@ -474,6 +412,22 @@ notquite:
 
         break;
 
+    case('L'):
+
+        clr_csl();
+        std::cout << "Enter passlength:" << std::endl;
+        std::getline(std::cin, input);
+        std::stringstream(input) >> pswd_length;
+        break;
+
+    case('S'):
+
+        clr_csl();
+        std::cout << "Enter seed:" << std::endl;
+        std::getline(std::cin, input);
+        std::stringstream(input) >> pswd_seed;
+        break;
+
     case(0x0D):
     case('\n'):
         password_generate();
@@ -485,7 +439,7 @@ notquite:
 
     case(0x1B):
         clr_csl();
-        exit(0);
+        return(0);
 
     case('h'):
         help_me();
