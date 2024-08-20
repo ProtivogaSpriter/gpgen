@@ -59,14 +59,14 @@ char getch(int echo)
     std::random_device  randomizer_seeder;
     std::mt19937 randomizer(0);
 
-    char in_char {' '};
+    char in_char                            {' '};
 
-    std::string input           {""};
+    std::string         input               {""};
 
-    std::string chr_pool        {""};
-    bool        chr_pool_ovflw  {false};
+    std::string         chr_pool            {""};
+    bool                chr_pool_ovflw      {false};
 
-    std::string pswd_result     {""};
+    std::string         pswd_result         {""};
 
     const std::string   chr_lowercase       {"abcdefghijklmnopqrstuvwxyz"};
     bool                lowercased          {false};
