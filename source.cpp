@@ -342,7 +342,7 @@ std::cout << R"(1.3     You can set the generated password's length by pressing 
 1.6     You can halt the program by pressing )" << "\033[95m'esc'\033[0m" <<R"(.
 
 2.      Generate the password by pressing )" << "\033[95m'enter'\033[0m" <<R"(. Make sure the character set pool has at least 1 character.
-2.1     You can save the password to a plaintext file titled 'output.txt' in the directory of the .exe file by pressing )" << "\033[95m'enter'\033[0m" <<R"( or )" << "\033[95m'y'\033[0m" <<R"(. Otherwise, press )" << "\033[95m'N'\033[0m" <<R"( or )" << "\033[95m'n'\033[0m" <<R"(.
+2.1     You can save the password to a plaintext file titled 'output.txt' in the directory of the .exe file by pressing )" << "\033[95m'Y'\033[0m" <<R"( or )" << "\033[95m'y'\033[0m" <<R"(. Otherwise, press )" << "\033[95m'N'\033[0m" <<R"( or )" << "\033[95m'n'\033[0m" <<R"(.
 2.1.1   You can add a tag to the saved password by typing anything when prompted for a tag. If no tag is needed, enter nothing.
 
 
