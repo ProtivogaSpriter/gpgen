@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1724008489 source:c:\users\gregory\desktop\scriptbag\code\gitshit\gpgen\source.cpp
+1725774690 source:c:\users\gregory\desktop\scriptbag\code\gitshit\gpgen\source.cpp
 	<iostream>
 	<fstream>
 	<string>
@@ -7,6 +7,8 @@
 	<ctime>
 	<chrono>
 	<random>
+	<io.h>
+	<fcntl.h>
 	<Windows.h>
 	<conio.h>
 	<cstdio>
