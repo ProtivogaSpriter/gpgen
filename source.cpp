@@ -305,9 +305,8 @@ void password_generate(){
 
             if(!output_file.is_open()){
                 std::wcout << L"Error! Unable to open 'output.txt'. Password will not be saved." << std::endl;
-                exit(1);
                 output_file.close();
-                break;
+                exit(1);
             }
 
             std::wcout << L"Enter a tag or leave blank for no tag: ";
@@ -317,15 +316,10 @@ void password_generate(){
                 output_file << input << L": ";
             }
             input = L"";
-            std::wcout << L"we got here!" << std::endl;
 
             output_file << pswd_result << std::endl;
 
-            std::wcout << L"even here!" << std::endl;
-
             output_file.close();
-
-            std::wcout << L"somehow even here!" << std::endl;
 
             break;
         }
@@ -389,11 +383,6 @@ int main(){
     _setmode(_fileno(stderr), _O_U16TEXT);
     //SetConsoleOutputCP(CP_UTF8);
     //setvbuf(stdout, nullptr, _IOFBF, 1000);
-    std::wcout << L"You are on windows!" << std::endl;
-
-#elif defined (UNIX) ||(_unix_)||(_linux_)||(LINUX)||(linux)
-
-    std::wcout<< L"You are on linux!" << std::endl;
 
 #endif
 
